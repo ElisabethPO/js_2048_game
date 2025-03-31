@@ -253,6 +253,7 @@ class Game {
     this.score = 0;
     this.status = 'playing';
     this.addRandomTile();
+
     this.render();
 
     document.querySelector('.message-win').classList.add('hidden');
