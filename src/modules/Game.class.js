@@ -24,16 +24,21 @@ class Game {
   constructor(initialState) {
     this.size = 4;
 
-    this.board = [
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
-    ];
+    this.board = [];
+
+    for (let i = 0; i < this.size; i++) {
+      this.board.push(new Array(this.size).fill(0));
+    }
     this.score = 0;
     this.status = 'idle';
-    document.addEventListener('keydown', (e) => this.handleKeyPress(e));
 
+    document
+      .querySelector('.button.start')
+      .addEventListener('click', () => this.start());
+
+    document
+      .querySelector('.button.restart')
+      .addEventListener('click', () => this.restart());
     // eslint-disable-next-line no-console
     console.log(initialState);
   }
@@ -80,7 +85,7 @@ class Game {
       for (let j = 0; j < row.length - 1; j++) {
         if (row[j] === row[j + 1]) {
           row[j] *= 2;
-          scoreThisMove += row[i];
+          scoreThisMove += row[j];
           row[j + 1] = 0;
         }
       }
@@ -216,54 +221,53 @@ class Game {
    * Starts the game.
    */
   start() {
-    this.board = [
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
-    ];
+    this.board = [];
+
+    for (let i = 0; i < this.size; i++) {
+      this.board.push(new Array(this.size).fill(0));
+    }
     this.score = 0;
     this.status = 'playing';
-    this.addRandomTile();
-    this.render();
 
-    document.querySelector('.message-start').classList.add('hidden');
-    document.querySelector('.message-lose').classList.add('hidden');
-    document.querySelector('.message-win').classList.add('hidden');
+    document.querySelector('.game-score').textContent = this.score;
+    document.querySelector('.message-container').classList.add('hidden');
 
-    const startButton = document.querySelector('.start');
+    const startButton = document.querySelector('.button.start');
 
     startButton.textContent = 'Restart';
     startButton.classList.remove('start');
     startButton.classList.add('restart');
-    startButton.removeEventListener('click, this.start');
-    startButton.addEventListener('click', this.restart);
+
+    this.addRandomTile();
+    this.render();
   }
 
   /**
    * Resets the game.
    */
   restart() {
-    this.board = [
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
-    ];
-    this.score = 0;
-    this.status = 'playing';
-    this.addRandomTile();
+    this.board = [];
 
+    for (let i = 0; i < this.size; i++) {
+      this.board.push(new Array(this.size).fill(0));
+    }
+    this.score = 0;
+    this.status = 'idle';
+
+    document.querySelector('.game-score').textContent = this.score;
+    document.querySelector('.message-container').classList.add('hidden');
+
+    this.addRandomTile();
     this.render();
 
-    document.querySelector('.message-win').classList.add('hidden');
-    document.querySelector('.message-lose').classList.add('hidden');
+    const startButton = document.querySelector('.button.restart');
 
-    const startButton = document.querySelector('.restart');
-
+    startButton.textContent = 'Start';
     startButton.classList.remove('restart');
     startButton.classList.add('start');
-    startButton.textContent = 'Start';
+
+    this.addRandomTile();
+    this.render();
   }
 
   render() {

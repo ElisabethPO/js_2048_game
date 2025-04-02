@@ -11,6 +11,12 @@ document.querySelector('.start').addEventListener('click', () => {
   game.start();
 });
 
+document.querySelector('.button.start').addEventListener('click', () => {
+  game.restart();
+});
+
+document.querySelector('.button.start').classList.replace('start', 'restart');
+
 document.addEventListener('keydown', (e) => {
   switch (e.key) {
     case 'ArrowUp':
