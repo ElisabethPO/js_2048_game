@@ -4,8 +4,12 @@
 const Game = require('../modules/Game.class');
 const game = new Game();
 
-const startButton = document.querySelector('start-button');
-const restartButton = document.createElement('restart-button');
+const startButton = document.querySelector('.button.start');
+const restartButton = document.createElement('button');
+
+restartButton.textContent = 'Restart';
+restartButton.classList.add('button', 'restart');
+
 // const gameMessage = document.querySelector('.message-container');
 const messageLose = document.querySelector('.message-lose');
 const messageWin = document.querySelector('.message-win');
@@ -13,12 +17,12 @@ const messageWin = document.querySelector('.message-win');
 
 startButton.addEventListener('click', () => {
   game.start();
-  render();
+  game.render(updateUI);
 });
 
 restartButton.addEventListener('click', () => {
   game.restart();
-  render();
+  game.render(updateUI);
 });
 
 document.addEventListener('keydown', (e) => {
@@ -44,7 +48,7 @@ document.addEventListener('keydown', (e) => {
   }
 
   game.addRandomTile();
-  render();
+  game.render(updateUI);
   updateGameMessage();
 });
 
@@ -61,7 +65,7 @@ function updateGameMessage() {
   }
 }
 
-function render() {
+function updateUI() {
   const cells = document.querySelectorAll('.field-cell');
 
   for (let i = 0; i < game.size; i++) {
@@ -75,4 +79,8 @@ function render() {
   }
 
   document.querySelector('.game-score').textContent = game.score;
+}
+
+if (game.board) {
+  updateUI();
 }

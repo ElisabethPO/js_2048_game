@@ -51,20 +51,22 @@ class Game {
 
   moveLeft() {
     for (let i = 0; i < this.size; i++) {
-      const row = this.board[i].filter((num) => num !== 0);
+      if (this.board[i]) {
+        const row = this.board[i].filter((num) => num !== 0);
 
-      for (let j = 0; j < row.length - 1; j++) {
-        if (row[j] === row[j + 1]) {
-          row[j] *= 2;
-          this.score += row[j];
-          row[j + 1] = 0;
+        for (let j = 0; j < row.length - 1; j++) {
+          if (row[j] === row[j + 1]) {
+            row[j] *= 2;
+            this.score += row[j];
+            row[j + 1] = 0;
+          }
         }
-      }
 
-      this.board[i] = [
-        ...row.filter((num) => num !== 0),
-        ...Array(this.size - row.length).fill(0),
-      ];
+        this.board[i] = [
+          ...row.filter((num) => num !== 0),
+          ...Array(this.size - row.length).fill(0),
+        ];
+      }
     }
   }
 
@@ -145,13 +147,19 @@ class Game {
   }
 
   render(updateUI) {
-    updateUI(this.board, this.score);
+    if (typeof updateUI === 'function') {
+      updateUI(this.board, this.score);
+    }
   }
 
   addRandomTile() {
     const emptyCells = [];
 
     for (let i = 0; i < this.size; i++) {
+      if (!this.board[i]) {
+        continue;
+      }
+
       for (let j = 0; j < this.size; j++) {
         if (this.board[i][j] === 0) {
           emptyCells.push({ i, j });
