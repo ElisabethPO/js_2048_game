@@ -62,9 +62,11 @@ class Game {
           }
         }
 
+        const newRow = row.filter((num) => num !== 0);
+
         this.board[i] = [
-          ...row.filter((num) => num !== 0),
-          ...Array(this.size - row.length).fill(0),
+          ...newRow,
+          ...Array(this.size - newRow.length).fill(0),
         ];
       }
     }

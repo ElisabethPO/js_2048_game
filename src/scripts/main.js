@@ -6,6 +6,7 @@ const game = new Game();
 
 const startButton = document.querySelector('.button.start');
 const restartButton = document.createElement('button');
+let gameIsRunning = false;
 
 restartButton.textContent = 'Restart';
 restartButton.classList.add('button', 'restart');
@@ -13,16 +14,66 @@ restartButton.classList.add('button', 'restart');
 // const gameMessage = document.querySelector('.message-container');
 const messageLose = document.querySelector('.message-lose');
 const messageWin = document.querySelector('.message-win');
+const messageStart = document.querySelector('.message-start');
+const controls = document.querySelector('.controls');
+
+// startButton.classList.add('restart');
+// startButton.classList.add('button');
+// startButton.textContent = 'Restart';
+
+function updateButtonState(isGameRunning) {
+  if (isGameRunning) {
+    startButton.textContent = 'Pause';
+    startButton.classList.add('paused');
+    messageStart.classList.add('hidden');
+  } else {
+    startButton.textContent = 'Start';
+    startButton.classList.remove('paused');
+    messageStart.classList.remove('hidden');
+  }
+}
+
+function startGame() {
+  gameIsRunning = true;
+  updateButtonState(gameIsRunning);
+}
+
+function pauseGame() {
+  gameIsRunning = false;
+  updateButtonState(gameIsRunning);
+}
+
+startButton.addEventListener('click', () => {
+  if (gameIsRunning) {
+    pauseGame();
+  } else {
+    startGame();
+  }
+});
+
+startButton.addEventListener('click', () => {
+  if (gameIsRunning) {
+    updateButtonState(false);
+  } else {
+    updateButtonState(true);
+  }
+});
 // Write your code here
 
 startButton.addEventListener('click', () => {
   game.start();
-  game.render(updateUI);
+  messageStart.classList.add('hidden');
+  updateUI();
+  startButton.remove();
+  controls.append(restartButton);
 });
 
 restartButton.addEventListener('click', () => {
   game.restart();
-  game.render(updateUI);
+  game.start();
+  updateUI();
+  messageWin.classList.add('hidden');
+  messageLose.classList.add('hidden');
 });
 
 document.addEventListener('keydown', (e) => {
@@ -48,7 +99,7 @@ document.addEventListener('keydown', (e) => {
   }
 
   game.addRandomTile();
-  game.render(updateUI);
+  updateUI();
   updateGameMessage();
 });
 
@@ -68,13 +119,15 @@ function updateGameMessage() {
 function updateUI() {
   const cells = document.querySelectorAll('.field-cell');
 
-  for (let i = 0; i < game.size; i++) {
-    for (let j = 0; j < game.size; j++) {
-      const cell = cells[i * game.size + j];
-      const value = game.board[i][j];
+  if (game.board) {
+    for (let i = 0; i < game.size; i++) {
+      for (let j = 0; j < game.size; j++) {
+        const cell = cells[i * game.size + j];
+        const value = game.board[i][j];
 
-      cell.textContent = value === 0 ? '' : value;
-      cell.className = `field-cell fielc-cell--${value}`;
+        cell.textContent = value === 0 ? '' : value;
+        cell.className = `field-cell field-cell--${value}`;
+      }
     }
   }
 
