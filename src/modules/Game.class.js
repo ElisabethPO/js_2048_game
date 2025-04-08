@@ -51,6 +51,7 @@ class Game {
 
   moveLeft() {
     let boardChanged = false;
+    const originalBoard = this.board.map(row => [...row]);
 
     for (let i = 0; i < this.size; i++) {
       if (this.board[i]) {
@@ -78,8 +79,10 @@ class Game {
       }
     }
 
-    if (boardChanged) {
-      this.addRandomTile();
+    if (!this.arraysEqual(originalBoard, this.board)) {
+      if (boardChanged) {
+        this.addRandomTile();
+      }
     }
   }
 
@@ -99,6 +102,7 @@ class Game {
 
   moveRight() {
     let boardChanged = false;
+    const originalBoard = this.board.map(row => [...row]);
 
     for (let i = 0; i < this.size; i++) {
       const originalRow = [...this.board[i]];
@@ -125,14 +129,18 @@ class Game {
       }
     }
 
-    if (boardChanged) {
-      this.addRandomTile();
+    if (!this.arraysEqual(originalBoard, this.board)) {
+      if (boardChanged) {
+        this.addRandomTile();
+      }
     }
   }
 
 
 
   moveUp() {
+    const originalBoard = this.board.map(row => [...row]);
+
     this.board = this.transposeBoard();
 
     let boardChanged = false;
@@ -160,13 +168,17 @@ class Game {
 
     this.board = this.transposeBoard();
 
-    if (boardChanged) {
-      this.addRandomTile();
+    if (!this.arraysEqual(originalBoard, this.board)) {
+      if (boardChanged) {
+        this.addRandomTile();
+      }
     }
   }
 
 
   moveDown() {
+    const originalBoard = this.board.map(row => [...row]);
+
     this.board = this.transposeBoard();
 
     let boardChanged = false;
@@ -187,7 +199,7 @@ class Game {
       }
 
       const newRow = row.filter((num) => num !== 0);
-      
+
       this.board[i] = [...newRow, ...Array(this.size - newRow.length).fill(0)];
       this.board[i].reverse();
 
@@ -198,8 +210,10 @@ class Game {
 
     this.board = this.transposeBoard();
 
-    if (boardChanged) {
-      this.addRandomTile();
+    if (!this.arraysEqual(originalBoard, this.board)) {
+      if (boardChanged) {
+        this.addRandomTile();
+      }
     }
   }
 
