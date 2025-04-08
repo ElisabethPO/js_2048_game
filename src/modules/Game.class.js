@@ -50,8 +50,11 @@ class Game {
   }
 
   moveLeft() {
+    let boardChanged = false;
+
     for (let i = 0; i < this.size; i++) {
       if (this.board[i]) {
+        const originalRow = [...this.board[i]];
         const row = this.board[i].filter((num) => num !== 0);
 
         for (let j = 0; j < row.length - 1; j++) {
@@ -68,30 +71,143 @@ class Game {
           ...newRow,
           ...Array(this.size - newRow.length).fill(0),
         ];
+
+        if (!boardChanged && !this.arraysEqual(originalRow, this.board[i])) {
+          boardChanged = true;
+        }
       }
+    }
+
+    if (boardChanged) {
+      this.addRandomTile();
     }
   }
 
-  moveRight() {
-    this.board.forEach((row) => row.reverse());
-    this.moveLeft();
-    this.board.forEach((row) => row.reverse());
+  arraysEqual(arr1, arr2) {
+    if (arr1.length !== arr2.length) {
+      return false;
+    }
+
+    for (let i = 0; i < arr1.length; i++) {
+      if (arr1[i] !== arr2[i]) {
+        return false;
+      }
+    }
+
+    return true;
   }
+
+  moveRight() {
+    let boardChanged = false;
+
+    for (let i = 0; i < this.size; i++) {
+      const originalRow = [...this.board[i]];
+
+      this.board[i].reverse();
+
+      const row = this.board[i].filter((num) => num !== 0);
+
+      for (let j = 0; j < row.length - 1; j++) {
+        if (row[j] === row[j + 1]) {
+          row[j] *= 2;
+          this.score += row[j];
+          row[j + 1] = 0;
+        }
+      }
+
+      const newRow = row.filter((num) => num !== 0);
+
+      this.board[i] = [...newRow, ...Array(this.size - newRow.length).fill(0)];
+      this.board[i].reverse();
+
+      if (!this.arraysEqual(originalRow, this.board[i])) {
+        boardChanged = true;
+      }
+    }
+
+    if (boardChanged) {
+      this.addRandomTile();
+    }
+  }
+
+
 
   moveUp() {
     this.board = this.transposeBoard();
-    this.moveLeft();
+
+    let boardChanged = false;
+
+    for (let i = 0; i < this.size; i++) {
+      const originalRow = [...this.board[i]];
+      const row = this.board[i].filter((num) => num !== 0);
+
+      for (let j = 0; j < row.length - 1; j++) {
+        if (row[j] === row[j + 1]) {
+          row[j] *= 2;
+          this.score += row[j];
+          row[j + 1] = 0;
+        }
+      }
+
+      const newRow = row.filter((num) => num !== 0);
+
+      this.board[i] = [...newRow, ...Array(this.size - newRow.length).fill(0)];
+
+      if (!this.arraysEqual(originalRow, this.board[i])) {
+        boardChanged = true;
+      }
+    }
+
     this.board = this.transposeBoard();
+
+    if (boardChanged) {
+      this.addRandomTile();
+    }
   }
+
 
   moveDown() {
     this.board = this.transposeBoard();
-    this.moveRight();
+
+    let boardChanged = false;
+
+    for (let i = 0; i < this.size; i++) {
+      const originalRow = [...this.board[i]];
+
+      this.board[i].reverse();
+
+      const row = this.board[i].filter((num) => num !== 0);
+
+      for (let j = 0; j < row.length - 1; j++) {
+        if (row[j] === row[j + 1]) {
+          row[j] *= 2;
+          this.score += row[j];
+          row[j + 1] = 0;
+        }
+      }
+
+      const newRow = row.filter((num) => num !== 0);
+      
+      this.board[i] = [...newRow, ...Array(this.size - newRow.length).fill(0)];
+      this.board[i].reverse();
+
+      if (!this.arraysEqual(originalRow, this.board[i])) {
+        boardChanged = true;
+      }
+    }
+
     this.board = this.transposeBoard();
+
+    if (boardChanged) {
+      this.addRandomTile();
+    }
   }
 
+
   transposeBoard(reverse = false) {
-    const transposed = this.board[0].map((_, i) => this.board.map((row) => row[i]));
+    const transposed = this.board[0].map((_, i) =>
+      this.board.map((row) => row[i]),
+    );
 
     if (reverse) {
       transposed.forEach((row) => row.reverse());
@@ -182,24 +298,25 @@ class Game {
   }
 
   checkGameOver() {
-    if (this.board.some((row) => row.includes(0))) {
-      return false;
-    }
-
     for (let i = 0; i < this.size; i++) {
       for (let j = 0; j < this.size; j++) {
+        if (this.board[i][j] === 0) {
+          return false;
+        }
+
+        if (j < this.size - 1 && this.board[i][j] === this.board[i][j + 1]) {
+          return false;
+        }
+
         if (i < this.size - 1 && this.board[i][j] === this.board[i + 1][j]) {
           return false;
         }
-
-        if (j < this.size - 1 && this.board[i][j] === this.board[j + 1]) {
-          return false;
-        }
       }
-
-      return true;
     }
+
+    return true;
   }
+
 }
 
 module.exports = Game;
