@@ -49,13 +49,35 @@ class Game {
     return board;
   }
 
+  arraysEqual(arr1, arr2) {
+    if (arr1.length !== arr2.length) {
+      return false;
+    }
+
+    for (let i = 0; i < arr1.length; i++) {
+      if (arr1[i].length !== arr2[i].length) {
+        return false;
+      }
+
+      for (let j = 0; j < arr1[i].length; j++) {
+        if (arr1[i][j] !== arr2[i][j]) {
+          return false;
+        }
+      }
+    }
+
+    return true;
+  }
+
+  shouldAddRandomTile(prevBoard, newBoard) {
+    return !this.arraysEqual(prevBoard, newBoard);
+  }
+
   moveLeft() {
-    let boardChanged = false;
-    const originalBoard = this.board.map(row => [...row]);
+    const previousBoard = this.board.map(row => row.slice());
 
     for (let i = 0; i < this.size; i++) {
       if (this.board[i]) {
-        const originalRow = [...this.board[i]];
         const row = this.board[i].filter((num) => num !== 0);
 
         for (let j = 0; j < row.length - 1; j++) {
@@ -72,41 +94,18 @@ class Game {
           ...newRow,
           ...Array(this.size - newRow.length).fill(0),
         ];
-
-        if (!boardChanged && !this.arraysEqual(originalRow, this.board[i])) {
-          boardChanged = true;
-        }
       }
     }
 
-    if (!this.arraysEqual(originalBoard, this.board)) {
-      if (boardChanged) {
-        this.addRandomTile();
-      }
+    if (this.shouldAddRandomTile(previousBoard, this.board)) {
+      this.addRandomTile();
     }
-  }
-
-  arraysEqual(arr1, arr2) {
-    if (arr1.length !== arr2.length) {
-      return false;
-    }
-
-    for (let i = 0; i < arr1.length; i++) {
-      if (arr1[i] !== arr2[i]) {
-        return false;
-      }
-    }
-
-    return true;
   }
 
   moveRight() {
-    let boardChanged = false;
-    const originalBoard = this.board.map(row => [...row]);
+    const previousBoard = this.board.map(row => row.slice());
 
     for (let i = 0; i < this.size; i++) {
-      const originalRow = [...this.board[i]];
-
       this.board[i].reverse();
 
       const row = this.board[i].filter((num) => num !== 0);
@@ -123,30 +122,19 @@ class Game {
 
       this.board[i] = [...newRow, ...Array(this.size - newRow.length).fill(0)];
       this.board[i].reverse();
-
-      if (!this.arraysEqual(originalRow, this.board[i])) {
-        boardChanged = true;
-      }
     }
 
-    if (!this.arraysEqual(originalBoard, this.board)) {
-      if (boardChanged) {
-        this.addRandomTile();
-      }
+    if (this.shouldAddRandomTile(previousBoard, this.board)) {
+      this.addRandomTile();
     }
   }
-
-
 
   moveUp() {
-    const originalBoard = this.board.map(row => [...row]);
+    const previousBoard = this.board.map(row => row.slice());
 
     this.board = this.transposeBoard();
 
-    let boardChanged = false;
-
     for (let i = 0; i < this.size; i++) {
-      const originalRow = [...this.board[i]];
       const row = this.board[i].filter((num) => num !== 0);
 
       for (let j = 0; j < row.length - 1; j++) {
@@ -160,32 +148,21 @@ class Game {
       const newRow = row.filter((num) => num !== 0);
 
       this.board[i] = [...newRow, ...Array(this.size - newRow.length).fill(0)];
-
-      if (!this.arraysEqual(originalRow, this.board[i])) {
-        boardChanged = true;
-      }
     }
 
     this.board = this.transposeBoard();
 
-    if (!this.arraysEqual(originalBoard, this.board)) {
-      if (boardChanged) {
-        this.addRandomTile();
-      }
+    if (this.shouldAddRandomTile(previousBoard, this.board)) {
+      this.addRandomTile();
     }
   }
-
 
   moveDown() {
-    const originalBoard = this.board.map(row => [...row]);
+    const previousBoard = this.board.map(row => row.slice());
 
     this.board = this.transposeBoard();
 
-    let boardChanged = false;
-
     for (let i = 0; i < this.size; i++) {
-      const originalRow = [...this.board[i]];
-
       this.board[i].reverse();
 
       const row = this.board[i].filter((num) => num !== 0);
@@ -202,34 +179,28 @@ class Game {
 
       this.board[i] = [...newRow, ...Array(this.size - newRow.length).fill(0)];
       this.board[i].reverse();
-
-      if (!this.arraysEqual(originalRow, this.board[i])) {
-        boardChanged = true;
-      }
     }
 
     this.board = this.transposeBoard();
 
-    if (!this.arraysEqual(originalBoard, this.board)) {
-      if (boardChanged) {
-        this.addRandomTile();
-      }
+    if (this.shouldAddRandomTile(previousBoard, this.board)) {
+      this.addRandomTile();
     }
   }
 
+  transposeBoard(board = this.board) {
+    const transposed = [];
 
-  transposeBoard(reverse = false) {
-    const transposed = this.board[0].map((_, i) =>
-      this.board.map((row) => row[i]),
-    );
+    for (let i = 0; i < this.size; i++) {
+      transposed[i] = [];
 
-    if (reverse) {
-      transposed.forEach((row) => row.reverse());
+      for (let j = 0; j < this.size; j++) {
+        transposed[i][j] = board[j][i];
+      }
     }
 
     return transposed;
   }
-
   /**
    * @returns {number}
    */
@@ -330,7 +301,6 @@ class Game {
 
     return true;
   }
-
 }
 
 module.exports = Game;
