@@ -98,7 +98,6 @@ document.addEventListener('keydown', (e) => {
       return;
   }
 
-  game.addRandomTile();
   updateUI();
   updateGameMessage();
 });

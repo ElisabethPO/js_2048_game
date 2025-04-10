@@ -69,41 +69,53 @@ class Game {
     return true;
   }
 
-  shouldAddRandomTile(prevBoard, newBoard) {
-    return !this.arraysEqual(prevBoard, newBoard);
-  }
-
-  moveLeft() {
-    const previousBoard = this.board.map(row => row.slice());
-
+  shouldAddRandomTile() {
     for (let i = 0; i < this.size; i++) {
-      if (this.board[i]) {
-        const row = this.board[i].filter((num) => num !== 0);
-
-        for (let j = 0; j < row.length - 1; j++) {
-          if (row[j] === row[j + 1]) {
-            row[j] *= 2;
-            this.score += row[j];
-            row[j + 1] = 0;
-          }
+      for (let j = 0; j < this.size; j++) {
+        if (j < this.size - 1 && this.board[i][j] === this.board[i][j + 1]) {
+          return false;
         }
 
-        const newRow = row.filter((num) => num !== 0);
-
-        this.board[i] = [
-          ...newRow,
-          ...Array(this.size - newRow.length).fill(0),
-        ];
+        if (i < this.size - 1 && this.board[i][j] === this.board[i + 1][j]) {
+          return false;
+        }
       }
     }
 
-    if (this.shouldAddRandomTile(previousBoard, this.board)) {
+    return true;
+  }
+
+  moveLeft() {
+    const previousBoard = this.board.map(row => [...row]);
+
+    this.mergeHappened = false;
+
+    for (let i = 0; i < this.size; i++) {
+      const row = this.board[i].filter((num) => num !== 0);
+
+      for (let j = 0; j < row.length - 1; j++) {
+        if (row[j] === row[j + 1]) {
+          row[j] *= 2;
+          this.score += row[j];
+          row[j + 1] = 0;
+          this.mergeHappened = true;
+        }
+      }
+
+      const newRow = row.filter((num) => num !== 0);
+
+      this.board[i] = [...newRow, ...Array(this.size - newRow.length).fill(0)];
+    }
+
+    if (!this.arraysEqual(previousBoard, this.board) && this.shouldAddRandomTile()) {
       this.addRandomTile();
     }
   }
 
   moveRight() {
-    const previousBoard = this.board.map(row => row.slice());
+    const previousBoard = this.board.map(row => [...row]);
+
+    this.mergeHappened = false;
 
     for (let i = 0; i < this.size; i++) {
       this.board[i].reverse();
@@ -115,6 +127,7 @@ class Game {
           row[j] *= 2;
           this.score += row[j];
           row[j + 1] = 0;
+          this.mergeHappened = true;
         }
       }
 
@@ -124,13 +137,15 @@ class Game {
       this.board[i].reverse();
     }
 
-    if (this.shouldAddRandomTile(previousBoard, this.board)) {
+    if (!this.arraysEqual(previousBoard, this.board) && this.shouldAddRandomTile()) {
       this.addRandomTile();
     }
   }
 
   moveUp() {
-    const previousBoard = this.board.map(row => row.slice());
+    const previousBoard = this.board.map(row => [...row]);
+
+    this.mergeHappened = false;
 
     this.board = this.transposeBoard();
 
@@ -142,6 +157,7 @@ class Game {
           row[j] *= 2;
           this.score += row[j];
           row[j + 1] = 0;
+          this.mergeHappened = true;
         }
       }
 
@@ -152,13 +168,15 @@ class Game {
 
     this.board = this.transposeBoard();
 
-    if (this.shouldAddRandomTile(previousBoard, this.board)) {
+    if (!this.arraysEqual(previousBoard, this.board) && this.shouldAddRandomTile()) {
       this.addRandomTile();
     }
   }
 
   moveDown() {
-    const previousBoard = this.board.map(row => row.slice());
+    const previousBoard = this.board.map(row => [...row]);
+
+    this.mergeHappened = false;
 
     this.board = this.transposeBoard();
 
@@ -172,6 +190,7 @@ class Game {
           row[j] *= 2;
           this.score += row[j];
           row[j + 1] = 0;
+          this.mergeHappened = true;
         }
       }
 
@@ -183,7 +202,7 @@ class Game {
 
     this.board = this.transposeBoard();
 
-    if (this.shouldAddRandomTile(previousBoard, this.board)) {
+    if (!this.arraysEqual(previousBoard, this.board) && this.shouldAddRandomTile()) {
       this.addRandomTile();
     }
   }
@@ -234,8 +253,9 @@ class Game {
    */
   start() {
     this.createEmptyBoard();
-    this.addRandomTile();
     this.status = 'playing';
+    this.addRandomTile();
+    this.addRandomTile();
     this.render();
   }
 
