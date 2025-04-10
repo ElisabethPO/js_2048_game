@@ -70,7 +70,6 @@ startButton.addEventListener('click', () => {
 
 restartButton.addEventListener('click', () => {
   game.restart();
-  game.start();
   updateUI();
   messageWin.classList.add('hidden');
   messageLose.classList.add('hidden');

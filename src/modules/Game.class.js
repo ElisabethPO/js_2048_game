@@ -69,26 +69,8 @@ class Game {
     return true;
   }
 
-  shouldAddRandomTile() {
-    for (let i = 0; i < this.size; i++) {
-      for (let j = 0; j < this.size; j++) {
-        if (j < this.size - 1 && this.board[i][j] === this.board[i][j + 1]) {
-          return false;
-        }
-
-        if (i < this.size - 1 && this.board[i][j] === this.board[i + 1][j]) {
-          return false;
-        }
-      }
-    }
-
-    return true;
-  }
-
   moveLeft() {
     const previousBoard = this.board.map(row => [...row]);
-
-    this.mergeHappened = false;
 
     for (let i = 0; i < this.size; i++) {
       const row = this.board[i].filter((num) => num !== 0);
@@ -98,7 +80,6 @@ class Game {
           row[j] *= 2;
           this.score += row[j];
           row[j + 1] = 0;
-          this.mergeHappened = true;
         }
       }
 
@@ -107,7 +88,7 @@ class Game {
       this.board[i] = [...newRow, ...Array(this.size - newRow.length).fill(0)];
     }
 
-    if (!this.arraysEqual(previousBoard, this.board) && this.shouldAddRandomTile()) {
+    if (!this.arraysEqual(previousBoard, this.board)) {
       this.addRandomTile();
     }
   }
@@ -115,8 +96,6 @@ class Game {
   moveRight() {
     const previousBoard = this.board.map(row => [...row]);
 
-    this.mergeHappened = false;
-
     for (let i = 0; i < this.size; i++) {
       this.board[i].reverse();
 
@@ -127,7 +106,6 @@ class Game {
           row[j] *= 2;
           this.score += row[j];
           row[j + 1] = 0;
-          this.mergeHappened = true;
         }
       }
 
@@ -137,7 +115,7 @@ class Game {
       this.board[i].reverse();
     }
 
-    if (!this.arraysEqual(previousBoard, this.board) && this.shouldAddRandomTile()) {
+    if (!this.arraysEqual(previousBoard, this.board)) {
       this.addRandomTile();
     }
   }
@@ -145,10 +123,6 @@ class Game {
   moveUp() {
     const previousBoard = this.board.map(row => [...row]);
 
-    this.mergeHappened = false;
-
-    this.board = this.transposeBoard();
-
     for (let i = 0; i < this.size; i++) {
       const row = this.board[i].filter((num) => num !== 0);
 
@@ -157,7 +131,6 @@ class Game {
           row[j] *= 2;
           this.score += row[j];
           row[j + 1] = 0;
-          this.mergeHappened = true;
         }
       }
 
@@ -168,7 +141,7 @@ class Game {
 
     this.board = this.transposeBoard();
 
-    if (!this.arraysEqual(previousBoard, this.board) && this.shouldAddRandomTile()) {
+    if (!this.arraysEqual(previousBoard, this.board)) {
       this.addRandomTile();
     }
   }
@@ -176,8 +149,6 @@ class Game {
   moveDown() {
     const previousBoard = this.board.map(row => [...row]);
 
-    this.mergeHappened = false;
-
     this.board = this.transposeBoard();
 
     for (let i = 0; i < this.size; i++) {
@@ -190,7 +161,6 @@ class Game {
           row[j] *= 2;
           this.score += row[j];
           row[j + 1] = 0;
-          this.mergeHappened = true;
         }
       }
 
@@ -202,7 +172,7 @@ class Game {
 
     this.board = this.transposeBoard();
 
-    if (!this.arraysEqual(previousBoard, this.board) && this.shouldAddRandomTile()) {
+    if (!this.arraysEqual(previousBoard, this.board)) {
       this.addRandomTile();
     }
   }
@@ -267,7 +237,9 @@ class Game {
     this.score = 0;
     this.status = 'idle';
     this.addRandomTile();
+    this.addRandomTile();
   }
+
 
   render(updateUI) {
     if (typeof updateUI === 'function') {
