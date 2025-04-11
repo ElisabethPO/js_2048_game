@@ -70,6 +70,10 @@ class Game {
   }
 
   moveLeft() {
+    if (this.status !== 'playing') {
+      return;
+    }
+
     const previousBoard = this.board.map(row => [...row]);
 
     for (let i = 0; i < this.size; i++) {
@@ -90,10 +94,20 @@ class Game {
 
     if (!this.arraysEqual(previousBoard, this.board)) {
       this.addRandomTile();
+    }
+
+    if (this.checkWin()) {
+      this.status = 'win';
+    } else if (this.checkGameOver()) {
+      this.status = 'lose';
     }
   }
 
   moveRight() {
+    if (this.status !== 'playing') {
+      return;
+    }
+
     const previousBoard = this.board.map(row => [...row]);
 
     for (let i = 0; i < this.size; i++) {
@@ -117,10 +131,20 @@ class Game {
 
     if (!this.arraysEqual(previousBoard, this.board)) {
       this.addRandomTile();
+    }
+
+    if (this.checkWin()) {
+      this.status = 'win';
+    } else if (this.checkGameOver()) {
+      this.status = 'lose';
     }
   }
 
   moveUp() {
+    if (this.status !== 'playing') {
+      return;
+    }
+
     const previousBoard = this.board.map(row => [...row]);
 
     for (let i = 0; i < this.size; i++) {
@@ -143,10 +167,20 @@ class Game {
 
     if (!this.arraysEqual(previousBoard, this.board)) {
       this.addRandomTile();
+    }
+
+    if (this.checkWin()) {
+      this.status = 'win';
+    } else if (this.checkGameOver()) {
+      this.status = 'lose';
     }
   }
 
   moveDown() {
+    if (this.status !== 'playing') {
+      return;
+    }
+
     const previousBoard = this.board.map(row => [...row]);
 
     this.board = this.transposeBoard();
@@ -174,6 +208,12 @@ class Game {
 
     if (!this.arraysEqual(previousBoard, this.board)) {
       this.addRandomTile();
+    }
+
+    if (this.checkWin()) {
+      this.status = 'win';
+    } else if (this.checkGameOver()) {
+      this.status = 'lose';
     }
   }
 
